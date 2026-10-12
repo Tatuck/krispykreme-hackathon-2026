@@ -1,4 +1,4 @@
-// Branded invite QR: rounded green modules, red finder eyes and a glazed doughnut in the middle.
+// Branded invite QR: rounded-square green modules (circles decode poorly), red finder eyes and a glazed doughnut in the middle.
 // Usage: node scripts/invite-qr.mjs <url> <out.svg>
 import { writeFileSync } from "node:fs";
 import QRCode from "qrcode";
@@ -28,7 +28,7 @@ for (let r = 0; r < n; r++) {
     const x = quiet + c * cell + cell / 2;
     const y = quiet + r * cell + cell / 2;
     if (Math.hypot(x - mid, y - mid) < holeR + cell * 0.8) continue;
-    dots.push(`<circle cx="${x}" cy="${y}" r="${cell * 0.5}"/>`);
+    dots.push(`<rect x="${x - cell / 2}" y="${y - cell / 2}" width="${cell}" height="${cell}" rx="${cell * 0.35}"/>`);
   }
 }
 
