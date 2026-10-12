@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+/* Tokens copied from krispykreme.es (--kk-* CSS variables on the official site). */
+@theme {
+  --color-kk-green: #006939;
+  --color-kk-green-dark: #004d2a;
+  --color-kk-green-light: #e6f0ea;
+  --color-kk-red: #cc112c;
+  --color-kk-red-dark: #a50d23;
+  --color-kk-pink: #f3a3bb;
+  --color-kk-yellow: #ffce0a;
+  --color-kk-orange: #d48233;
+  --color-kk-blue: #3a7ca5;
+  --color-kk-gold: #c99700;
+  --color-kk-cream: #fdf4eb;
+  --color-kk-sand: #f6e9db;
+  --color-kk-glaze: #e2a04f;
+  --color-kk-ink: #4c4c4c;
+  --color-kk-dark: #2b2b2b;
+  --color-kk-muted: #7a7068;
+  /* Official: "Brandon Grotesque" + "Gelica" (commercial). Free lookalikes: Jost + soft Fraunces. */
+  --font-display: var(--font-jost), Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-jost), Arial, Helvetica, sans-serif;
+  --font-script: var(--font-fraunces), Georgia, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Brand app: always light, cream background like the official site. */
+body {
+  background: var(--color-kk-cream);
+  color: var(--color-kk-ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-kk-yellow);
+  outline-offset: 2px;
+}
+
+/* White product tile (official .kk-product-card): big radius, soft lift. */
+@utility card {
+  @apply rounded-[20px] bg-white p-6 shadow-[0_6px_18px_-8px_rgba(0,77,42,0.25)];
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-7 py-3 text-[15px] leading-tight font-black tracking-[0.06em] uppercase transition-colors active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-kk-red text-white hover:bg-kk-red-dark;
+}
+@utility btn-green {
+  @apply btn bg-kk-green text-white hover:bg-kk-green-dark;
+}
+@utility btn-ghost {
+  @apply btn border-2 border-kk-green bg-white text-kk-green hover:bg-kk-green-light;
+}
+/* White pill under product tiles on the official site. */
+@utility btn-pill {
+  @apply btn bg-white px-8 py-2.5 text-[13px] tracking-[0.1em] text-kk-green shadow-[0_4px_10px_-4px_rgba(0,0,0,0.25)] hover:bg-kk-cream;
+}
+@utility input {
+  @apply w-full rounded-xl border-2 border-kk-sand bg-white px-4 py-3 text-base text-kk-dark outline-none transition-colors placeholder:text-kk-muted/60 focus:border-kk-green;
+}
+@utility label {
+  @apply mb-1.5 block text-[15px] font-bold text-kk-dark;
+}
+/* Heavy, wide, uppercase headings (official .kk-section-title). */
+@utility h-display {
+  @apply font-display font-black tracking-[0.05em] uppercase;
+}
+/* Italic serif phrase (official .kk-script, Gelica). Used for whole phrases, never one word. */
+@utility kk-script {
+  @apply font-script font-semibold tracking-normal normal-case italic;
+  font-variation-settings: "SOFT" 100, "WONK" 0;
+}
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold;
+}
+
+/* Angled bottom edge of the official green product band. */
+.kk-wedge {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 40px), 50% 100%, 0 calc(100% - 40px));
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero: doughnuts drop into the open box one by one (the page's single load moment). */
+@keyframes kk-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.kk-drop {
+  animation: kk-drop 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+/* Pre-order occasion scenes (PreorderForm). */
+@keyframes kk-confetti {
+  from {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(150px) rotate(540deg);
+    opacity: 0;
+  }
+}
+@keyframes kk-float-up {
+  0% {
+    transform: translateY(40px) rotate(-4deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) rotate(4deg);
+  }
+  100% {
+    transform: translateY(-90px) rotate(-3deg);
+    opacity: 0;
+  }
+}
+@keyframes kk-flicker {
+  0%,
+  100% {
+    transform: scaleY(1) rotate(-3deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.8) rotate(4deg);
+    opacity: 0.85;
+  }
+}
+@keyframes kk-steam {
+  from {
+    transform: translateY(0) scaleX(1);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(-26px) scaleX(1.4);
+    opacity: 0;
+  }
+}
+@keyframes kk-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes kk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes kk-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes kk-scene-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.kk-confetti {
+  animation: kk-confetti 2.4s ease-in infinite both;
+}
+.kk-float-up {
+  animation: kk-float-up 4s ease-in-out infinite both;
+}
+.kk-flicker {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: kk-flicker 0.6s ease-in-out infinite;
+}
+.kk-steam {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: kk-steam 2s ease-out infinite both;
+}
+.kk-bob {
+  animation: kk-bob 1.6s ease-in-out infinite;
+}
+.kk-spin {
+  animation: kk-spin 6s linear infinite;
+}
+.kk-pop {
+  animation: kk-pop 0.3s ease-out;
+}
+.kk-scene-in {
+  animation: kk-scene-in 0.45s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .kk-confetti,
+  .kk-float-up,
+  .kk-flicker,
+  .kk-steam,
+  .kk-bob,
+  .kk-spin,
+  .kk-pop,
+  .kk-scene-in,
+  .kk-drop,
+  [class*="animate-"] {
+    animation: none !important;
+  }
+}
