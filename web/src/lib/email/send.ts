@@ -6,6 +6,7 @@ import type { Customer } from "@/db/schema";
 import { createMagicToken } from "../auth";
 import { getBaseUrl } from "../url";
 import { now } from "../clock";
+import { isAllowedSignupEmail, isDemoEmail, publicDemo } from "../demo";
 import type { Locale } from "../gifts";
 import { renderEmail, type EmailData, type EmailGift, type EmailKind } from "./templates";
 
@@ -50,9 +51,10 @@ export async function sendCustomerEmail(
 
   let status: SendResult["status"] = "preview";
   let error: string | undefined;
-  // Seeded demo customers use @example.com: render + log only, never hit Resend.
-  const isDemoAddress = customer.email.endsWith("@example.com");
-  if (resend && extra.send !== false && !isDemoAddress) {
+  // Fake addresses (@example.com, seed data) are only rendered + logged. On the public demo, real
+  // mail goes out only to allowlisted team inboxes (DEMO_EMAIL_ALLOWLIST).
+  const sendable = !isDemoEmail(customer.email) && (!publicDemo || isAllowedSignupEmail(customer.email));
+  if (resend && extra.send !== false && sendable) {
     try {
       const res = await resend.emails.send({ from: FROM, to: customer.email, subject, html });
       if (res.error) {
