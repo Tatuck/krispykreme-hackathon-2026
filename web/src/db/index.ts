@@ -7,8 +7,8 @@ const globalForDb = globalThis as unknown as { kkClient?: ReturnType<typeof crea
 const client =
   globalForDb.kkClient ??
   createClient({
-    url: process.env.DATABASE_URL ?? "file:local.db",
-    authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
+    url: process.env.DATABASE_URL ?? process.env.TURSO_DATABASE_URL ?? "file:local.db",
+    authToken: process.env.DATABASE_AUTH_TOKEN || process.env.TURSO_AUTH_TOKEN || undefined,
   });
 
 if (process.env.NODE_ENV !== "production") globalForDb.kkClient = client;
