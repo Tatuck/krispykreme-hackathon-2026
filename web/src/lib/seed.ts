@@ -172,6 +172,21 @@ export async function seedDemoData(count = 40) {
 
 const eqId = (id: number) => eq(schema.customers.id, id);
 
+/** The team's own member account: its printed invite QR points at /r/EQUIPO, so it survives resets. */
+export const TEAM_ACCOUNT = {
+  email: "equipo@hack2026.tatuck.com",
+  name: "Equipo Hackathon",
+  dob: "2000-01-01",
+  refCode: "EQUIPO",
+} as const;
+
+export async function ensureTeamAccount() {
+  await db
+    .insert(schema.customers)
+    .values({ ...TEAM_ACCOUNT, locale: "es", marketingConsent: false, createdAt: await now() })
+    .onConflictDoNothing();
+}
+
 export async function resetAllData() {
   await db.delete(schema.emails);
   await db.delete(schema.gifts);
@@ -180,4 +195,6 @@ export async function resetAllData() {
   await db.delete(schema.preorders);
   await db.delete(schema.customers);
   await db.delete(schema.settings);
+  // Recreated fresh (zero visits/stamps) under the same invite code.
+  await ensureTeamAccount();
 }
