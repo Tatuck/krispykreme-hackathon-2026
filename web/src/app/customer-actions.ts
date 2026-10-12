@@ -17,6 +17,7 @@ import {
 import { sendCustomerEmail } from "@/lib/email/send";
 import { getBaseUrl } from "@/lib/url";
 import { normalizeCode } from "@/lib/codes";
+import { isAllowedSignupEmail, publicDemo } from "@/lib/demo";
 import { now } from "@/lib/clock";
 import { PREORDER_OCCASIONS, parseItems, quotePreorder, type PreorderOccasion } from "@/lib/pricing";
 
@@ -32,7 +33,7 @@ export type WonGift = { type: string; code: string; expiresAt: number };
 
 export type ClaimState =
   | { status: "idle" }
-  | { status: "error"; error: SignupError | "invalid" | "termsRequired" | "notFound" | "alreadyClaimed" }
+  | { status: "error"; error: SignupError | "invalid" | "termsRequired" | "demoEmail" | "notFound" | "alreadyClaimed" }
   | {
       status: "done";
       gift: WonGift | null;
@@ -56,6 +57,7 @@ function parseSignup(form: FormData) {
     marketing: form.get("marketing") || undefined,
   });
   if (!parsed.success) return { error: "invalid" as const };
+  if (publicDemo && !isAllowedSignupEmail(parsed.data.email)) return { error: "demoEmail" as const };
   return { data: parsed.data };
 }
 
@@ -121,7 +123,7 @@ export async function claimAsSessionAction(ticketCode: string): Promise<ClaimSta
 
 export type ReferralState =
   | { status: "idle" }
-  | { status: "error"; error: SignupError | "invalid" | "termsRequired" }
+  | { status: "error"; error: SignupError | "invalid" | "termsRequired" | "demoEmail" }
   | { status: "done"; gift: WonGift };
 
 export async function referralSignupAction(refCode: string, _prev: ReferralState, form: FormData): Promise<ReferralState> {
@@ -183,7 +185,8 @@ export async function createPreorderAction(_prev: PreorderState, form: FormData)
   // Re-priced here: the client total is only a preview.
   const quote = quotePreorder(items, { birthday: c.dob.slice(5) === parsed.data.pickupDate.slice(5) });
   if (!quote) return { ok: false };
-  const { pickupDate, occasion, note } = parsed.data;
+  const { pickupDate, occasion } = parsed.data;
+  const note = publicDemo ? undefined : parsed.data.note;
   await db.insert(schema.preorders).values({
     customerId: c.id,
     pickupDate,

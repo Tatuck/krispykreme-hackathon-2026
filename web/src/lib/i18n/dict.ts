@@ -82,6 +82,8 @@ const es = {
     dobMismatch: "Ese email ya está registrado con otra fecha de nacimiento.",
     invalid: "Revisa los datos del formulario.",
     termsRequired: "Debes aceptar los términos.",
+    demoNotice: "Demo pública: usamos datos ficticios para que no tengas que dar tu email real. Los emails se pueden ver en Admin → Emails.",
+    demoEmail: "En la demo pública solo se admiten emails ficticios @example.com.",
   },
   wheel: {
     title: "¡Gira la ruleta!",
@@ -407,6 +409,8 @@ const en: Dict = {
     dobMismatch: "That email is already registered with another date of birth.",
     invalid: "Please check the form.",
     termsRequired: "You must accept the terms.",
+    demoNotice: "Public demo: we use made-up details so you never share your real email. Emails can be viewed in Admin → Emails.",
+    demoEmail: "The public demo only accepts made-up @example.com emails.",
   },
   wheel: {
     title: "Spin the wheel!",

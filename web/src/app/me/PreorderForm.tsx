@@ -3,6 +3,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { createPreorderAction, type PreorderState } from "@/app/customer-actions";
 import { useT } from "@/lib/i18n/client";
 import { fmtEuro } from "@/lib/format";
+import { publicDemo } from "@/lib/demo";
 import { BIRTHDAY_MIN_BOXES } from "@/lib/gifts";
 import {
   PREORDER_BOXES,
@@ -160,10 +161,13 @@ export function PreorderForm({ minDate, dob }: { minDate: string; dob: string })
               className="input"
             />
           </div>
-          <div>
-            <label className="label" htmlFor="note">{t.preorder.note}</label>
-            <input id="note" name="note" maxLength={200} className="input" />
-          </div>
+          {/* Free text could carry personal data: hidden on the public demo. */}
+          {!publicDemo && (
+            <div>
+              <label className="label" htmlFor="note">{t.preorder.note}</label>
+              <input id="note" name="note" maxLength={200} className="input" />
+            </div>
+          )}
         </div>
       </fieldset>
 
