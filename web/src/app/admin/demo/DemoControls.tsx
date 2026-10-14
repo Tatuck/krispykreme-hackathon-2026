@@ -5,7 +5,7 @@ import { resetAction, runDailyAction, seedAction, shiftClockAction } from "../ac
 import type { DailyResult } from "@/lib/loyalty";
 import { useT } from "@/lib/i18n/client";
 
-export function DemoControls({ section }: { section: "clock" | "data" }) {
+export function DemoControls({ section, canReset = false }: { section: "clock" | "data"; canReset?: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -53,19 +53,20 @@ export function DemoControls({ section }: { section: "clock" | "data" }) {
       <button
         className="btn-green w-full"
         disabled={pending}
-        onClick={() => start(async () => { const n = await seedAction(); setMsg(`+${n}`); router.refresh(); })}
+        onClick={() => start(async () => { const n = await seedAction(); setMsg(n ? `+${n}` : t.common.demoFull); router.refresh(); })}
       >
         {t.admin.seed}
       </button>
       <button
         className="btn-ghost w-full border-kk-red text-kk-red"
-        disabled={pending}
+        disabled={pending || !canReset}
         onClick={() => {
           if (window.confirm(t.admin.reset + "?")) act(resetAction);
         }}
       >
         {t.admin.reset}
       </button>
+      {!canReset && <p className="text-sm text-kk-muted">{t.admin.resetOwnerOnly}</p>}
       {pending && <p className="text-sm text-kk-muted">{t.common.loading}</p>}
       {msg && <p className="text-sm font-bold text-kk-green">{msg}</p>}
     </div>

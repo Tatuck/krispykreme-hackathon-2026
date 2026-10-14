@@ -7,6 +7,7 @@ import { dicts } from "@/lib/i18n/dict";
 import { I18nProvider } from "@/lib/i18n/client";
 import { LangToggle } from "@/components/LangToggle";
 import { Logo } from "@/components/Logo";
+import { GitHubButton } from "@/components/GitHubButton";
 
 const jost = Jost({ variable: "--font-jost", subsets: ["latin"], weight: ["400", "500", "700", "800", "900"] });
 // Soft axis makes Fraunces read like the rounded Gelica italic used on krispykreme.es.
@@ -54,6 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <p className="text-sm text-white/70">{t.footer}</p>
             </div>
           </footer>
+          <GitHubButton label={t.common.github} />
         </I18nProvider>
       </body>
     </html>

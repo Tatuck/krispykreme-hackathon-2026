@@ -107,6 +107,7 @@ export function Kiosk() {
 
   const errMap: Record<string, string> = {
     notFound: t.staff.notFound,
+    demoFull: t.common.demoFull,
     giftUsed: t.staff.giftUsed,
     giftExpired: t.staff.giftExpired,
     giftOtherMember: t.staff.giftOtherMember,
@@ -375,7 +376,7 @@ export function Kiosk() {
               </p>
             )}
 
-            <form action={action} className="sticky bottom-0 z-10 -mx-1 bg-kk-cream/95 px-1 pt-2 pb-4">
+            <form action={action} className="sticky bottom-0 z-10 -mx-1 bg-kk-cream/95 pt-2 pr-16 pb-4 pl-1">
               <input type="hidden" name="items" value={JSON.stringify(cart)} />
               <input type="hidden" name="memberCode" value={customer?.refCode ?? ""} />
               <input type="hidden" name="giftCode" value={giftCode ?? ""} />

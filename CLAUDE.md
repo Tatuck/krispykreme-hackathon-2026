@@ -16,7 +16,7 @@ npm run typecheck
 npx eslint src
 ```
 
-Store/admin PIN is `STAFF_PIN` (default `1234`). Env vars are documented in `.env.example`; `.env.local` holds the real Resend key.
+Store/admin PIN is `STAFF_PIN` (default `1234`, public); the secret `ADMIN_PIN` adds the owner role, the only one allowed to wipe data on the public demo (`canWipeData`). Env vars are documented in `.env.example`; `.env.local` holds the real Resend key.
 
 ## Next.js 16 caveat
 
@@ -37,11 +37,13 @@ Store/admin PIN is `STAFF_PIN` (default `1234`). Env vars are documented in `.en
 
 **Demo clock**: `lib/clock.ts` `now()` = real time + `clockOffsetDays` setting. Always use `await now()` (not `Date.now()`) for anything stored or compared in the DB so admin "time travel" works. All timestamps are epoch ms integers.
 
+**Public demo caps** (`lib/limits.ts`): with `NEXT_PUBLIC_DEMO_MODE=1`, `hasRoom(table)` refuses new customers/tickets/emails/pre-orders over `DEMO_MAX_*`; `/api/cron/daily` resets + reseeds when `isDbFull()`. Call `hasRoom` before any new insert path that visitors can trigger.
+
 **Settings** (`lib/settings.ts`) are a JSON key/value table: `wheelWeights`, `clockOffsetDays`.
 
 **Email** (`lib/email/`): `templates.ts` renders table-based HTML per `EmailKind` and locale; `send.ts` inserts the `emails` row first (to get an id), renders with click-tracking (`/api/e/c/[id]`) and open-pixel (`/api/e/o/[id]`) URLs, then sends via Resend. Marketing kinds (birthday, winback, tier_up) are skipped without consent. Addresses ending in `@example.com` (seed data) are never sent. Opens/clicks feed the score via `lib/tracking.ts`.
 
-**Auth** (`lib/auth.ts`): stateless HMAC-signed tokens (`AUTH_SECRET`) — customer session cookie, 7-day magic-link token (`/auth/[token]`), and staff cookie set by PIN. Cookie `secure` flag follows the actual base URL protocol so plain-HTTP access over a Tailscale IP works.
+**Auth** (`lib/auth.ts`): stateless HMAC-signed tokens (`AUTH_SECRET`) — customer session cookie, 7-day magic-link token (`/auth/[token]`), and staff cookie set by PIN (`sub` = `staff` | `owner`). On the public demo `AUTH_SECRET` is required (the dev fallback is public). Cookie `secure` flag follows the actual base URL protocol so plain-HTTP access over a Tailscale IP works.
 
 **Base URL** (`lib/url.ts`): `APP_URL` env if set, else request host/forwarded headers. Used for QR codes and email links; currently set to the Tailscale IP for the demo.
 

@@ -8,8 +8,9 @@ import { Skyline } from "@/components/Skyline";
 // Ring colours of the official store locator, one per step.
 const RINGS = ["#006939", "#cc112c", "#d48233", "#3a7ca5"];
 
-export default async function Home() {
+export default async function Home({ searchParams }: PageProps<"/">) {
   const { t } = await getT();
+  const full = (await searchParams).full === "1";
   const steps = [
     { title: t.home.step1, d: t.home.step1d },
     { title: t.home.step2, d: t.home.step2d },
@@ -18,6 +19,11 @@ export default async function Home() {
   ];
   return (
     <div>
+      {full && (
+        <p role="alert" className="mx-auto mt-6 max-w-6xl px-4 text-center font-bold text-kk-red">
+          {t.common.demoFull}
+        </p>
+      )}
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-12 pb-16 md:grid-cols-[1.1fr_1fr] md:pt-20 md:pb-24">
         <div className="text-center md:text-left">
           <h1 className="leading-[0.95]">

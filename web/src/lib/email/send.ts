@@ -6,6 +6,7 @@ import type { Customer } from "@/db/schema";
 import { createMagicToken } from "../auth";
 import { getBaseUrl } from "../url";
 import { now } from "../clock";
+import { hasRoom } from "../limits";
 import { isAllowedSignupEmail, isDemoEmail, publicDemo } from "../demo";
 import type { Locale } from "../gifts";
 import { renderEmail, type EmailData, type EmailGift, type EmailKind } from "./templates";
@@ -24,6 +25,7 @@ export async function sendCustomerEmail(
   extra: { gifts?: EmailGift[]; friendName?: string | null; convertedCount?: number; send?: boolean } = {},
 ): Promise<SendResult> {
   if (MARKETING.includes(kind) && !customer.marketingConsent) return { id: 0, status: "skipped" };
+  if (!(await hasRoom("emails"))) return { id: 0, status: "skipped" };
 
   const base = await getBaseUrl();
   const locale = (customer.locale === "en" ? "en" : "es") as Locale;

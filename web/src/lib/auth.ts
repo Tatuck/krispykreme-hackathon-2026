@@ -5,8 +5,14 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { getBaseUrl } from "./url";
+import { pinRole, publicDemo, type StaffRole } from "./demo";
 
-const SECRET = process.env.AUTH_SECRET || "dev-insecure-secret";
+// The fallback is public (this repo is open source): the public demo must set its own secret.
+function secret(): string {
+  const s = process.env.AUTH_SECRET;
+  if (!s && publicDemo) throw new Error("AUTH_SECRET must be set on the public demo");
+  return s || "dev-insecure-secret";
+}
 const CUSTOMER_COOKIE = "kk_session";
 const STAFF_COOKIE = "kk_staff";
 const CLAIM_COOKIE = "kk_claim";
@@ -19,7 +25,7 @@ function b64(s: string) {
 
 function sign(payload: Payload): string {
   const body = b64(JSON.stringify(payload));
-  const sig = createHmac("sha256", SECRET).update(body).digest("base64url");
+  const sig = createHmac("sha256", secret()).update(body).digest("base64url");
   return `${body}.${sig}`;
 }
 
@@ -27,7 +33,7 @@ function verify(token: string | undefined, kind: Payload["kind"]): Payload | nul
   if (!token) return null;
   const [body, sig] = token.split(".");
   if (!body || !sig) return null;
-  const expected = createHmac("sha256", SECRET).update(body).digest("base64url");
+  const expected = createHmac("sha256", secret()).update(body).digest("base64url");
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
@@ -101,14 +107,12 @@ export async function getSessionCustomer() {
   return (await db.query.customers.findFirst({ where: eq(schema.customers.id, id) })) ?? null;
 }
 
-export function checkStaffPin(pin: string): boolean {
-  const expected = Buffer.from(process.env.STAFF_PIN || "1234");
-  const given = Buffer.from(pin);
-  return expected.length === given.length && timingSafeEqual(expected, given);
+export function checkStaffPin(pin: string): StaffRole | null {
+  return pinRole(pin, process.env.STAFF_PIN || "1234", process.env.ADMIN_PIN || "");
 }
 
-export async function setStaffSession() {
-  (await cookies()).set(STAFF_COOKIE, sign({ sub: "staff", exp: Date.now() + 1 * DAY, kind: "staff" }), {
+export async function setStaffSession(role: StaffRole) {
+  (await cookies()).set(STAFF_COOKIE, sign({ sub: role, exp: Date.now() + 1 * DAY, kind: "staff" }), {
     httpOnly: true,
     sameSite: "lax",
     secure: await secureCookies(),
@@ -123,6 +127,16 @@ export async function clearStaffSession() {
 
 export async function isStaff(): Promise<boolean> {
   return verify((await cookies()).get(STAFF_COOKIE)?.value, "staff") !== null;
+}
+
+/** Logged in with ADMIN_PIN: may wipe the database on the public demo. */
+export async function isOwner(): Promise<boolean> {
+  return verify((await cookies()).get(STAFF_COOKIE)?.value, "staff")?.sub === "owner";
+}
+
+/** Destructive admin actions: anyone with the staff PIN locally, only the owner on the public demo. */
+export async function canWipeData(): Promise<boolean> {
+  return publicDemo ? isOwner() : isStaff();
 }
 
 export async function requireStaff() {

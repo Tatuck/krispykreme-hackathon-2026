@@ -1,4 +1,5 @@
 import { getT } from "@/lib/i18n/server";
+import { canWipeData } from "@/lib/auth";
 import { getClockOffsetDays, now } from "@/lib/clock";
 import { fmtDate } from "@/lib/format";
 import { DemoControls } from "./DemoControls";
@@ -19,7 +20,7 @@ export default async function DemoPage() {
       <section className="card space-y-3">
         <h2 className="h-display text-base text-kk-green">{t.admin.seed}</h2>
         <p className="text-sm text-kk-muted">{t.admin.seedHelp}</p>
-        <DemoControls section="data" />
+        <DemoControls section="data" canReset={await canWipeData()} />
       </section>
     </div>
   );

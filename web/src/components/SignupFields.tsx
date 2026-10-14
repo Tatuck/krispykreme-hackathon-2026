@@ -86,6 +86,7 @@ export function FormError({ error }: { error: string | null }) {
     invalid: t.form.invalid,
     termsRequired: t.form.termsRequired,
     demoEmail: t.form.demoEmail,
+    demoFull: t.common.demoFull,
     alreadyCustomer: t.referral.alreadyCustomer,
     selfReferral: t.referral.selfReferral,
     notFound: t.ticket.notFound,

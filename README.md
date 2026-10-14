@@ -34,4 +34,10 @@ cd web && npm install && cp .env.example .env.local && npm run db:push && npm ru
 
 Store/admin PIN: `1234`.
 
+On the public demo that PIN opens the kiosk and the admin panel, but it can't wipe the data: that needs the secret `ADMIN_PIN`. The database is capped (500 customers, 3,000 receipts by default); when it fills up, new sign-ups are refused and the daily cron resets it with fresh sample data.
+
+## License
+
+[MIT](LICENSE).
+
 > Hackathon prototype. Not affiliated with or endorsed by Krispy Kreme.

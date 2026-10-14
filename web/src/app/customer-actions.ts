@@ -19,6 +19,7 @@ import { getBaseUrl } from "@/lib/url";
 import { normalizeCode } from "@/lib/codes";
 import { isAllowedSignupEmail, publicDemo } from "@/lib/demo";
 import { now } from "@/lib/clock";
+import { hasRoom } from "@/lib/limits";
 import { PREORDER_OCCASIONS, parseItems, quotePreorder, type PreorderOccasion } from "@/lib/pricing";
 
 const signupSchema = z.object({
@@ -179,6 +180,7 @@ export async function createPreorderAction(_prev: PreorderState, form: FormData)
   if (!c) return { ok: false };
   const parsed = preorderSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { ok: false };
+  if (!(await hasRoom("preorders"))) return { ok: false };
   const at = await now();
   if (parsed.data.pickupDate < new Date(at).toISOString().slice(0, 10)) return { ok: false };
   const items = parseItems(parsed.data.items);

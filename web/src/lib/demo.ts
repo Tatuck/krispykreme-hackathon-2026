@@ -6,6 +6,8 @@
  */
 export const DEMO_EMAIL_DOMAIN = "example.com";
 
+export const REPO_URL = "https://github.com/Tatuck/krispykreme-hackathon-2026";
+
 export const publicDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
 
 export function isDemoEmail(email: string): boolean {
@@ -38,4 +40,24 @@ export function makeFakeProfile(rand: () => number = Math.random): FakeProfile {
   const day = 1 + Math.floor(rand() * 28);
   const dob = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   return { name, email: `${slug}.${suffix}@${DEMO_EMAIL_DOMAIN}`, dob };
+}
+
+export type StaffRole = "staff" | "owner";
+
+/**
+ * The staff PIN is public (it's in the README) and opens the kiosk and admin. ADMIN_PIN is secret
+ * and also unlocks destructive actions (wiping the database) on the public demo.
+ */
+export function pinRole(pin: string, staffPin: string, adminPin = ""): StaffRole | null {
+  if (adminPin && safeEqual(pin, adminPin)) return "owner";
+  if (safeEqual(pin, staffPin)) return "staff";
+  return null;
+}
+
+// Constant-time for equal lengths; PIN length isn't a secret worth hiding.
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }

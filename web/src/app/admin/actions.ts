@@ -2,7 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/db";
-import { isStaff } from "@/lib/auth";
+import { canWipeData, isStaff } from "@/lib/auth";
 import { setSetting } from "@/lib/settings";
 import { getClockOffsetDays, setClockOffsetDays } from "@/lib/clock";
 import { WHEEL_GIFT_TYPES } from "@/lib/gifts";
@@ -45,7 +45,7 @@ export async function seedAction() {
 }
 
 export async function resetAction() {
-  await guard();
+  if (!(await canWipeData())) throw new Error("unauthorized");
   await resetAllData();
   revalidatePath("/", "layout");
 }

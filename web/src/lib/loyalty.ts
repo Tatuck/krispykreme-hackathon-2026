@@ -17,6 +17,7 @@ import {
 import { sendCustomerEmail } from "./email/send";
 import { ageOn, madridMonthDay, madridYear } from "./format";
 import { boxStamps, parseItems, type CartLine, type DiscountLine } from "./pricing";
+import { hasRoom } from "./limits";
 
 const TIER_RANK: Record<Tier, number> = { original: 0, chocolate: 1, gold: 2 };
 
@@ -82,7 +83,7 @@ export type SignupInput = {
   marketing: boolean;
 };
 
-export type SignupError = "tooYoung" | "dobMismatch" | "alreadyCustomer" | "selfReferral";
+export type SignupError = "tooYoung" | "dobMismatch" | "alreadyCustomer" | "selfReferral" | "demoFull";
 
 /** Finds or creates a customer. Existing emails must match the DOB (light anti-fraud for the demo). */
 export async function findOrCreateCustomer(
@@ -98,6 +99,7 @@ export async function findOrCreateCustomer(
     if (existing.dob !== input.dob) return { error: "dobMismatch" };
     return { customer: existing, created: false };
   }
+  if (!(await hasRoom("customers"))) return { error: "demoFull" };
   let refCode = newRefCode(input.name || email);
   while (await db.query.customers.findFirst({ where: eq(schema.customers.refCode, refCode) })) {
     refCode = newRefCode(input.name || email);

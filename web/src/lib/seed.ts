@@ -7,6 +7,7 @@ import { computeScore } from "./scoring";
 import { GIFTS, WHEEL_GIFT_TYPES, type GiftType } from "./gifts";
 import { renderEmail, type EmailKind } from "./email/templates";
 import { cartTotals, giftDiscount, type CartLine } from "./pricing";
+import { clearCapacityCache, hasRoom } from "./limits";
 
 const NAMES = [
   "Lucía", "Hugo", "Martina", "Mateo", "Sofía", "Leo", "Paula", "Daniel", "Valeria", "Pablo",
@@ -30,6 +31,10 @@ const storeHour = (ms: number) =>
 
 /** Inserts ~40 realistic fake customers with visits, gifts, referrals and emails. Sends nothing. */
 export async function seedDemoData(count = 40) {
+  // Up to 9 visits (tickets) and a few emails per fake customer.
+  if (!(await hasRoom("customers", count)) || !(await hasRoom("tickets", count * 9)) || !(await hasRoom("emails", count * 5))) {
+    return 0;
+  }
   const at = await now();
   const ids: number[] = [];
   for (let i = 0; i < count; i++) {
@@ -197,4 +202,5 @@ export async function resetAllData() {
   await db.delete(schema.settings);
   // Recreated fresh (zero visits/stamps) under the same invite code.
   await ensureTeamAccount();
+  clearCapacityCache();
 }

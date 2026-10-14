@@ -19,7 +19,7 @@ npm run db:push              # creates local.db (SQLite)
 npm run dev -- -H 0.0.0.0    # phones on the same Wi-Fi can scan QRs via http://<LAN-IP>:3000
 ```
 
-Store/admin PIN: `STAFF_PIN` (default `1234`).
+Store/admin PIN: `STAFF_PIN` (default `1234`). On the public demo (`NEXT_PUBLIC_DEMO_MODE=1`) "Delete all data" also needs the secret `ADMIN_PIN`, and `AUTH_SECRET` is mandatory.
 
 ## Demo script (5 min)
 
@@ -39,6 +39,8 @@ Store/admin PIN: `STAFF_PIN` (default `1234`).
 ## Deploy (Vercel)
 
 SQLite files are not writable on Vercel: create a Turso DB and set `DATABASE_URL=libsql://…` + `DATABASE_AUTH_TOKEN`, then `npm run db:push`. `vercel.json` runs `/api/cron/daily` at 08:00 UTC (set `CRON_SECRET`).
+
+Public demo limits (`src/lib/limits.ts`): customers, tickets, emails and pre-orders are capped (`DEMO_MAX_*`, defaults 500 / 3000 / 5000 / 500) so visitors can't grow the Turso database. Over a cap, new rows are refused with a "demo is full" message; the daily cron then wipes and reseeds the database (the `EQUIPO` team account survives). `robots.txt` keeps crawlers off `/demo`, which rings up a ticket per visit.
 
 ## Checks
 

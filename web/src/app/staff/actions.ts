@@ -15,14 +15,18 @@ import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
 import { normalizeCode } from "@/lib/codes";
 import { now } from "@/lib/clock";
+import { hasRoom } from "@/lib/limits";
 import { madridMonthDay } from "@/lib/format";
 import type { GiftType } from "@/lib/gifts";
 import { cartTotals, quoteSale, stampCardForCart, type CartLine, type DiscountLine, type GiftRuleError } from "@/lib/pricing";
 
 export async function staffLoginAction(_prev: { error: boolean }, form: FormData) {
-  if (!checkStaffPin(String(form.get("pin") ?? ""))) return { error: true };
-  await setStaffSession();
-  redirect(String(form.get("next") || "/staff"));
+  const role = checkStaffPin(String(form.get("pin") ?? ""));
+  if (!role) return { error: true };
+  await setStaffSession(role);
+  // Same-site paths only (no open redirect through the login form).
+  const next = String(form.get("next") ?? "");
+  redirect(next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/staff");
 }
 
 export async function staffLogoutAction() {
@@ -62,7 +66,7 @@ export type SalePreview = {
   totalCents: number;
 };
 
-type SaleError = "invalid" | "notFound" | "giftUsed" | "giftExpired" | "giftOtherMember" | GiftRuleError;
+type SaleError = "invalid" | "demoFull" | "notFound" | "giftUsed" | "giftExpired" | "giftOtherMember" | GiftRuleError;
 
 /**
  * Validates the kiosk cart and prices it from the catalog, without side effects. A gift handed over
@@ -126,6 +130,7 @@ export async function createSaleAction(_prev: SaleState, form: FormData): Promis
   const r = await quoteFromForm(form);
   if ("error" in r) return { status: "error", error: r.error };
   const { preview, memberId } = r;
+  if (!(await hasRoom("tickets"))) return { status: "error", error: "demoFull" };
 
   if (preview.giftCode) {
     const g = await redeemGift(preview.giftCode);

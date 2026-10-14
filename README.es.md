@@ -34,4 +34,10 @@ cd web && npm install && cp .env.example .env.local && npm run db:push && npm ru
 
 PIN de tienda/admin: `1234`.
 
+En la demo pública ese PIN abre el kiosko y el panel de admin, pero no permite borrar los datos: eso requiere el `ADMIN_PIN` secreto. La base de datos tiene un tope (500 clientes y 3.000 tickets por defecto); al llenarse se rechazan altas nuevas y el cron diario la reinicia con datos de ejemplo.
+
+## Licencia
+
+[MIT](LICENSE).
+
 > Prototipo de hackathon. Sin relación oficial con Krispy Kreme.
