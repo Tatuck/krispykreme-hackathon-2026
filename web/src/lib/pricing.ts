@@ -67,6 +67,8 @@ export function giftDiscount(type: GiftType, sale: SaleInput): { cents: number }
       return needsBox(PRICE_BOX_CENTS - PRICE_HALF_DOZEN_CENTS);
     case "COFFEE_BOX":
       return needsBox(sale.drinks ? (sale.drinkCents ?? 0) : 0); // one coffee, if it's on the ticket
+    case "TIER_GOLD_50": // half price on one box, worth at most half an Original Glazed dozen
+      return needsBox(Math.round(freeBox * 0.5));
     case "REF_HALF_DOZEN": // a free Original Glazed 6-pack, or its value off a bigger box
       return needsBox(Math.min(boxCents, PRICE_HALF_DOZEN_CENTS));
     case "REF_HALF_50": // half price on a half dozen (capped at the 6-pack's value)

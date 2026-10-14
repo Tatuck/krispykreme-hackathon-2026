@@ -3,10 +3,10 @@
 Loyalty + referral web app that turns one-time buyers into repeat **box** buyers.
 
 - **Ticket QR → gift wheel**: every receipt has a QR. Customer enters email + date of birth, spins a box-biased wheel and gets a gift (also emailed).
-- **Referrals**: friend gets 20% off their first box; inviter earns a doughnut per converted friend and a free dozen every 3.
+- **Referrals**: friend gets 20% off their first box; when 3 friends have bought their first box the inviter earns a free half dozen, then every 3 more friends 50% off another half dozen (a `DOUBLE_REFERRAL` wheel prize doubles the next step).
 - **Wallet** (`/me`): member card (Apple/Google Wallet mock), stamp card (5 boxes → 6th free), tier progress, gifts with QR, invite link, box pre-orders.
-- **Value score 0–100** (recency, frequency, boxes, email engagement, referrals) → tiers Original / Chocolate / Gold.
-- **Automations** (daily job): gift expiry, birthday email (15% off when buying 3+ boxes on your birthday), win-back (Chocolate/Gold after 21 days with 30% off a dozen; others after 30 days with 15%).
+- **Value score 0–100** (recency 30, frequency 25, boxes 20, email engagement 15, referrals 10) → tiers Original (<40) / Chocolate (40–74) / Gold (75+). Moving up puts a one-off gift in the wallet (Chocolate: free Original Glazed with a box; Gold: 50% off a dozen) and higher tiers get an earlier, bigger win-back. Perks are listed in the wallet.
+- **Automations** (daily job): gift expiry, birthday email (15% off when buying 3+ boxes on your birthday), win-back (Chocolate/Gold after 21 days with 25% off a dozen; others after 30 days with 15% off a box).
 - **Store panel** (`/staff`): kiosk-style counter — tap products, scan the customer's member/gift QR to load their rewards, pick one, live ticket, charge (free-doughnut gifts are 0 € sales) + print receipt QR. Birthday discount auto-applied.
 - **Admin** (`/admin`): KPIs, charts, customers + score breakdown, referral tree, email log/previews, wheel odds, pre-orders, demo clock.
 
@@ -29,6 +29,8 @@ Store/admin PIN: `STAFF_PIN` (default `1234`). On the public demo (`NEXT_PUBLIC_
 4. `/staff` → sale with friend's member code + gift code → referral converts, inviter gets reward email.
 5. `/admin/demo` → **Generar clientes de ejemplo** → `/admin` dashboard.
 6. `/admin/demo` → **+22 días** → **Ejecutar tarea diaria** → win-back emails → **Volver a hoy**.
+
+Pitch QR: with `NEXT_PUBLIC_DEMO_MODE=1`, `/demo` rings up a fresh one-dozen ticket on every scan and opens its wheel, so one printed QR works for the whole room.
 
 ## Email notes
 

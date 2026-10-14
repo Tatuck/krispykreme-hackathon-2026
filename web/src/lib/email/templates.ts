@@ -106,11 +106,11 @@ function copyFor(kind: EmailKind, d: EmailData, l: Locale): Copy {
         subject: es
           ? `🎉 ¡Has subido a nivel ${TIER_NAMES[d.tier ?? "chocolate"].es}!`
           : `🎉 You reached ${TIER_NAMES[d.tier ?? "chocolate"].en} tier!`,
-        preheader: es ? "Más ventajas para ti." : "More perks for you.",
+        preheader: es ? "Tienes un regalo nuevo en tu monedero." : "There's a new gift in your wallet.",
         heading: hi,
         body: es
-          ? "Gracias por ser de la familia Krispy Kreme. Tu nivel desbloquea ofertas mejores y atención preferente."
-          : "Thanks for being part of the Krispy Kreme family. Your tier unlocks better offers and priority treatment.",
+          ? "Gracias por ser de la familia Krispy Kreme. Tu regalo de nivel ya está en tu monedero y, si algún día dejas de venir, te escribiremos antes (a las 3 semanas) con un 25% en una docena."
+          : "Thanks for being part of the Krispy Kreme family. Your tier gift is already in your wallet and, if you ever stop coming, we'll write sooner (after 3 weeks) with 25% off a dozen.",
         cta: es ? "Ver mis ventajas" : "See my perks",
       };
     case "magic_link":

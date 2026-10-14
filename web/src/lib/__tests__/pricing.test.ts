@@ -200,3 +200,17 @@ describe("quotePreorder", () => {
     expect(quotePreorder([{ id: "dozen-og", qty: PREORDER_MAX_BOXES + 1 }], { birthday: false })).toBeNull();
   });
 });
+
+describe("TIER_GOLD_50", () => {
+  it("takes half off a dozen", () => {
+    const q = quoteSale(sale(1), { giftType: "TIER_GOLD_50" });
+    expect(q).toEqual({ subtotalCents: 1390, discounts: [{ kind: "TIER_GOLD_50", cents: 695 }], totalCents: 695 });
+  });
+  it("is capped at half an Original Glazed dozen and needs a box", () => {
+    const pricey = cartTotals([{ id: "dozen-mix", qty: 1 }])!;
+    expect(quoteSale(pricey, { giftType: "TIER_GOLD_50" })).toMatchObject({ discounts: [{ cents: 695 }] });
+    const half = cartTotals([{ id: "half-og", qty: 1 }])!;
+    expect(quoteSale(half, { giftType: "TIER_GOLD_50" })).toMatchObject({ discounts: [{ cents: 445 }] });
+    expect(quoteSale(sale(0, 2), { giftType: "TIER_GOLD_50" })).toEqual({ error: "giftNeedsBox" });
+  });
+});

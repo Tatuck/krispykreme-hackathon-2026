@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_WEIGHTS, pickWeighted, WHEEL_GIFT_TYPES } from "../gifts";
-import { computeScore, punchCard, referralRewards, tierFor, winbackRule } from "../scoring";
+import { computeScore, punchCard, referralRewards, tierFor, tierUpGift, winbackRule } from "../scoring";
 import { ageOn } from "../format";
 
 const DAY = 86_400_000;
@@ -87,5 +87,13 @@ describe("rules", () => {
     const at = Date.UTC(2026, 9, 9);
     expect(ageOn("2012-10-09", at)).toBe(14);
     expect(ageOn("2012-10-10", at)).toBe(13);
+  });
+});
+
+describe("tierUpGift", () => {
+  it("gives a gift for Chocolate and Gold, none for the starting tier", () => {
+    expect(tierUpGift("original")).toBeNull();
+    expect(tierUpGift("chocolate")).toBe("FREE_GLAZED");
+    expect(tierUpGift("gold")).toBe("TIER_GOLD_50");
   });
 });

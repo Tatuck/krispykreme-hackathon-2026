@@ -10,6 +10,7 @@ import {
   computeScore,
   punchCard,
   referralRewards,
+  tierUpGift,
   winbackRule,
   type ScoreBreakdown,
   type Tier,
@@ -20,6 +21,7 @@ import { boxStamps, parseItems, type CartLine, type DiscountLine } from "./prici
 import { hasRoom } from "./limits";
 
 const TIER_RANK: Record<Tier, number> = { original: 0, chocolate: 1, gold: 2 };
+const TIERS = Object.keys(TIER_RANK) as Tier[];
 
 export async function getCustomer(id: number) {
   return (await db.query.customers.findFirst({ where: eq(schema.customers.id, id) })) ?? null;
@@ -63,14 +65,26 @@ export async function scoreFor(c: Customer, at?: number): Promise<ScoreBreakdown
   );
 }
 
-/** Recomputes score/tier; emails the customer when they move up a tier. */
+/**
+ * Recomputes score/tier. Moving up a tier puts that tier's gift in the wallet (once per tier, so
+ * dropping and climbing back doesn't pay twice) and emails the customer unless `notify` is false.
+ */
 export async function refreshScore(customerId: number, opts: { notify?: boolean } = {}) {
   const c = await getCustomer(customerId);
   if (!c) return null;
   const s = await scoreFor(c);
   await db.update(schema.customers).set({ score: s.total, tier: s.tier }).where(eq(schema.customers.id, c.id));
-  if (opts.notify !== false && TIER_RANK[s.tier] > TIER_RANK[c.tier as Tier]) {
-    await sendCustomerEmail({ ...c, score: s.total, tier: s.tier }, "tier_up");
+  if (TIER_RANK[s.tier] > TIER_RANK[c.tier as Tier]) {
+    const gifts: Gift[] = [];
+    for (const tier of TIERS.filter((t) => TIER_RANK[t] > TIER_RANK[c.tier as Tier] && TIER_RANK[t] <= TIER_RANK[s.tier])) {
+      const type = tierUpGift(tier);
+      if (!type) continue;
+      const had = await db.query.gifts.findFirst({
+        where: and(eq(schema.gifts.customerId, c.id), eq(schema.gifts.type, type), eq(schema.gifts.source, "tier_up")),
+      });
+      if (!had) gifts.push(await issueGift(c.id, type, "tier_up"));
+    }
+    if (opts.notify !== false) await sendCustomerEmail({ ...c, score: s.total, tier: s.tier }, "tier_up", { gifts });
   }
   return s;
 }

@@ -22,7 +22,8 @@ export type GiftType =
   | "STAMP_BOX"
   | "BDAY"
   | "WINBACK_30"
-  | "WINBACK_15";
+  | "WINBACK_15"
+  | "TIER_GOLD_50";
 
 export type GiftSource =
   | "wheel"
@@ -31,7 +32,8 @@ export type GiftSource =
   | "referral_ladder"
   | "stamp_card"
   | "birthday"
-  | "winback";
+  | "winback"
+  | "tier_up";
 
 type GiftInfo = {
   emoji: string;
@@ -210,6 +212,17 @@ export const GIFTS: Record<GiftType, GiftInfo> = {
       en: "Come back for your favourite doughnuts.",
     },
     short: { es: "15% caja", en: "15% box" },
+  },
+  TIER_GOLD_50: {
+    emoji: "👑",
+    color: "#C99700",
+    validMinutes: DAYS_14 * 2,
+    title: { es: "50% en una docena", en: "50% off a dozen" },
+    desc: {
+      es: "Regalo por llegar a nivel Gold: cualquier docena a mitad de precio.",
+      en: "Gift for reaching Gold tier: half price on any dozen.",
+    },
+    short: { es: "−50% docena", en: "−50% dozen" },
   },
 };
 

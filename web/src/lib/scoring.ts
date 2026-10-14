@@ -63,6 +63,16 @@ export const TIER_INFO: Record<Tier, { emoji: string; color: string; min: number
   gold: { emoji: "👑", color: "#C99700", min: 75, next: null },
 };
 
+/**
+ * One-off wallet gift when a customer moves up into a tier: Chocolate earns a free Original Glazed
+ * with a box, Gold half price on a dozen. Original is the starting tier, so it has none.
+ */
+export function tierUpGift(tier: Tier): "FREE_GLAZED" | "TIER_GOLD_50" | null {
+  if (tier === "gold") return "TIER_GOLD_50";
+  if (tier === "chocolate") return "FREE_GLAZED";
+  return null;
+}
+
 /** Win-back threshold: valuable customers get chased sooner and with a bigger offer. */
 export function winbackRule(tier: Tier): { afterDays: number; gift: "WINBACK_30" | "WINBACK_15" } {
   return tier === "original"

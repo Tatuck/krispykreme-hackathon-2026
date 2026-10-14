@@ -118,6 +118,24 @@ export default async function WalletPage() {
                   )}
                 </span>
               </p>
+              <ul className="space-y-2 border-t border-kk-sand pt-3">
+                {(Object.keys(TIER_INFO) as Tier[]).map((k) => (
+                  <li
+                    key={k}
+                    className={`rounded-xl border-l-4 px-3 py-2 text-sm ${k === tier ? "bg-kk-cream" : "opacity-75"}`}
+                    style={{ borderColor: TIER_INFO[k].color }}
+                  >
+                    <p className="flex justify-between gap-2 font-bold text-kk-dark">
+                      <span>{t.tiers[k]}</span>
+                      <span className="text-kk-muted">
+                        {k === tier ? t.wallet.tierYou : `${TIER_INFO[k].min}+`}
+                      </span>
+                    </p>
+                    <p>{t.wallet.tierPerks[k]}</p>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-kk-muted">{t.wallet.tierHow}</p>
             </div>
 
             <div className="space-y-4">
