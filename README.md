@@ -1,6 +1,6 @@
 # Krispy Kreme Madrid · Rewards
 
-🇬🇧 English · [🇪🇸 Español](README.es.md) · **Live demo: https://hack2026.tatuck.com**
+🇬🇧 English · [🇪🇸 Español](README.es.md) · **Live demo: https://hack2026.tatuck.com** · [Slides (PDF, Spanish)](docs/Krispy%20Kreme%20-%20Vuelve%20por%20m%C3%A1s.pdf)
 
 Loyalty and referral web app built for the **Krispy Kreme hackathon organized by [STARTComillas](https://www.instagram.com/startcomillas/)** (Universidad Pontificia Comillas, Madrid, October 2026).
 
